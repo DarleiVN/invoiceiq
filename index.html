@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InvoiceIQ Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen font-sans">
+
+    <div class="max-w-6xl mx-auto px-4 py-12">
+        <header class="flex justify-between items-center mb-12 border-b border-gray-800 pb-6">
+            <div>
+                <h1 class="text-4xl font-extrabold text-orange-500 tracking-tight">InvoiceIQ</h1>
+                <p class="text-gray-400 mt-1">Extração automática de faturas com IA (Amazon Textract)</p>
+            </div>
+            <button onclick="carregarFaturas()" class="bg-orange-600 hover:bg-orange-500 text-white font-bold py-2.5 px-6 rounded-lg transition duration-200 ease-in-out shadow-lg">
+                Atualizar Dashboard
+            </button>
+        </header>
+
+        <div class="bg-gray-800 rounded-xl shadow-xl border border-gray-750 overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-700">
+                <thead class="bg-gray-700/50">
+                    <tr>
+                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">ID do Documento</th>
+                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Data do Processo</th>
+                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Fornecedor (IA Extraído)</th>
+                        <th scope="col" class="px-6 py-4 class-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Valor Total</th>
+                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-corpo" class="divide-y divide-gray-700 bg-gray-800">
+                    <tr>
+                        <td colspan="5" class="px-6 py-8 text-center text-gray-400">
+                            A carregar faturas da AWS...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // COLE AQUI O URL DA SUA API (Sem aspas angulares)
+        const API_URL = "https://hh14l63sxa.execute-api.us-east-1.amazonaws.com/invoices";;
+
+        async function carregarFaturas() {
+            const tbody = document.getElementById('tabela-corpo');
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                tbody.innerHTML = '';
+                
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-gray-400">Nenhuma fatura encontrada no DynamoDB.</td></tr>`;
+                    return;
+                }
+
+                // Ordenar por data mais recente
+                data.sort((a, b) => new Date(b.process_date) - new Date(a.process_date));
+
+                data.forEach(item => {
+                    const dataFormatada = new Date(item.process_date).toLocaleString('pt-PT');
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-gray-700/30 transition duration-150">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">${item.document_id}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">${dataFormatada}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-semibold">${item.vendor_name || 'N/A'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-orange-400 font-bold">${item.total_amount || 'R$ 0,00'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-900 text-green-200">
+                                    ${item.status || 'PROCESSADO'}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                console.error('Erro na requisição:', error);
+                tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-red-400 font-semibold">Erro ao comunicar com a API Gateway. Verifique a consola do navegador.</td></tr>`;
+            }
+        }
+
+        // Executar imediatamente ao abrir a página
+        window.onload = carregarFaturas;
+    </script>
+</body>
+</html>

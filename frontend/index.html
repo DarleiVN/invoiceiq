@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>InvoiceIQ | Financial Engine</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+        }
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 40px; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 30px; }
+        h1 { margin: 0; font-size: 1.8rem; letter-spacing: -0.025em; }
+        
+        .card { background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 20px; }
+        th { text-align: left; color: #64748b; font-size: 0.85rem; text-transform: uppercase; padding: 12px; border-bottom: 2px solid #f1f5f9; }
+        td { padding: 16px 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; }
+        
+        .pdf-link { color: var(--primary); cursor: pointer; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .pdf-link:hover { text-decoration: underline; }
+        
+        .badge { background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 600; }
+        button { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500; transition: opacity 0.2s; }
+        button:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>InvoiceIQ</h1>
+                <small>Pipeline de Extração Inteligente v2.0</small>
+            </div>
+            <button onclick="loadInvoices()">Sincronizar Dados</button>
+        </div>
+        <div class="card">
+            <table>
+                <thead>
+                    <tr><th>Documento</th><th>Data</th><th>Fornecedor</th><th>Valor</th><th>Status</th></tr>
+                </thead>
+                <tbody id="table-body"><tr><td colspan="5">Processando...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        async function loadInvoices() {
+            const tbody = document.getElementById('table-body');
+            const data = await (await fetch("https://hh14l63sxa.execute-api.us-east-1.amazonaws.com/invoices")).json();
+            tbody.innerHTML = data.map(i => `
+                <tr>
+                    <td class="pdf-link" onclick="openPdf('${i.document_id}')">📄 ${i.document_id}</td>
+                    <td>${new Date(i.process_date).toLocaleDateString()}</td>
+                    <td>${i.vendor_name || 'N/A'}</td>
+                    <td style="font-family: monospace; font-weight: 600;">${i.total_amount}</td>
+                    <td><span class="badge">${i.status}</span></td>
+                </tr>
+            `).join('');
+        }
+        async function openPdf(id) {
+            const tab = window.open('about:blank', '_blank');
+            tab.document.write('<h3>Carregando documento seguro...</h3>');
+            const res = await (await fetch("https://gbew1ecm8c.execute-api.us-east-1.amazonaws.com/url?document_id="+id)).json();
+            res.url ? tab.location.href = res.url : tab.close();
+        }
+        loadInvoices();
+    </script>
+</body>
+</html>

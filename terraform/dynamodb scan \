@@ -1,0 +1,35 @@
+{
+    "Items": [
+        {
+            "document_id": {
+                "S": "recibo_teste.pdf"
+            },
+            "process_date": {
+                "S": "2026-07-12T16:33:41.895739"
+            },
+            "vendor_name": {
+                "S": "Cloud Mock Services (Simulado)"
+            },
+            "total_amount": {
+                "S": "850.00"
+            }
+        },
+        {
+            "document_id": {
+                "S": "nota_fiscal_teste_02.pdf"
+            },
+            "process_date": {
+                "S": "2026-07-16T01:28:55.092340"
+            },
+            "vendor_name": {
+                "S": "Cloud Mock Services (Simulado)"
+            },
+            "total_amount": {
+                "S": "850.00"
+            }
+        }
+    ],
+    "Count": 2,
+    "ScannedCount": 2,
+    "ConsumedCapacity": null
+}

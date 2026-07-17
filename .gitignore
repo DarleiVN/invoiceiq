@@ -1,0 +1,20 @@
+# Ambientes e dependências
+venv/
+.venv/
+__pycache__/
+
+# Scripts de teste e PDF
+*.py
+!terraform/
+!src/
+!frontend/
+wipe_db.py
+fabricar_pdfs*.py
+sanitizar_banco.py
+*.pdf
+
+# Infraestrutura e Logs
+terraform.tfstate
+terraform.tfstate.backup
+.terraform/
+.env
