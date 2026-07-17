@@ -15,6 +15,7 @@ resource "aws_s3_bucket_website_configuration" "frontend_website" {
   index_document {
     suffix = "index.html"
   }
+  
 }
 
 # Desbloquear o acesso público ao bucket do website

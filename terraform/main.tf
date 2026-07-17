@@ -16,6 +16,7 @@ provider "aws" {
       Gerenciado = "Terraform"
     }
   }
+  
 }
 
 resource "aws_s3_bucket" "invoiceiq_bucket" {

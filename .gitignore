@@ -1,20 +1,28 @@
-# Ambientes e dependências
+# --- Ambientes e Dependências ---
 venv/
 .venv/
 __pycache__/
 
-# Scripts de teste e PDF
-*.py
-!terraform/
-!src/
-!frontend/
-wipe_db.py
-fabricar_pdfs*.py
-sanitizar_banco.py
-*.pdf
-
-# Infraestrutura e Logs
+# --- Infraestrutura e Configuração (SEMPRE IGNORAR) ---
 terraform.tfstate
 terraform.tfstate.backup
 .terraform/
 .env
+*.pem
+*.secret
+
+# --- Arquivos de log e logs corrompidos ---
+dynamodb*
+*.log
+
+# --- Exceções (Arquivos que você QUER versionar) ---
+# Garante que os assets de teste sejam rastreados, apesar do filtro global abaixo
+!terraform/assets/*.pdf
+!terraform/assets/*.png
+!terraform/assets/*.gif
+
+# --- Filtro Global ---
+# Ignora arquivos temporários comuns
+*.pyc
+*.pyo
+.DS_Store
