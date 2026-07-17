@@ -1,0 +1,28 @@
+# --- Ambientes e Dependências ---
+venv/
+.venv/
+__pycache__/
+
+# --- Infraestrutura e Configuração (SEMPRE IGNORAR) ---
+terraform.tfstate
+terraform.tfstate.backup
+.terraform/
+.env
+*.pem
+*.secret
+
+# --- Arquivos de log e logs corrompidos ---
+dynamodb*
+*.log
+
+# --- Exceções (Arquivos que você QUER versionar) ---
+# Garante que os assets de teste sejam rastreados, apesar do filtro global abaixo
+!terraform/assets/*.pdf
+!terraform/assets/*.png
+!terraform/assets/*.gif
+
+# --- Filtro Global ---
+# Ignora arquivos temporários comuns
+*.pyc
+*.pyo
+.DS_Store
